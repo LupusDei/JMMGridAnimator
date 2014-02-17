@@ -12,9 +12,9 @@
 
 static CGFloat const kJMMExpansionFactor = 18.0f;
 static CGFloat const kJMMJuxtapositionDuration = 4.0f;
-static CGFloat const kJMMItemSize = 80.0f;
 static CGFloat const kJMMGridSize = 320.0f;
-static double const kJMMNumberOfItems = 16;
+static int const kJMMItemsPerRow = 4;
+static int const kJMMNumberOfRows = 4;
 
 
 static CGPoint TransformAroundCenter(CGPoint center, CGPoint start) {
@@ -36,12 +36,14 @@ static CGPoint ExpandFromStart(CGPoint start, CGPoint end, CGSize size) {
 
 @implementation JMMViewController {
     UIButton *_startButton;
+    CGFloat _itemSize;
     BOOL _swapped;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    _itemSize = kJMMGridSize / kJMMItemsPerRow;
     _startButton = [[UIButton alloc] initWithFrame:CGRectMake(self.view.center.x, self.view.height - 50, 80, 50)];
     [_startButton addTarget:self action:@selector(triggerAnimation) forControlEvents:UIControlEventTouchUpInside];
     [_startButton setTitle:@"Trigger" forState:UIControlStateNormal];
@@ -49,16 +51,16 @@ static CGPoint ExpandFromStart(CGPoint start, CGPoint end, CGSize size) {
     [self.view addSubview:_startButton];
     
     self.gridItems = [NSMutableArray array];
-	for (int i = 0; i < kJMMNumberOfItems; i++) {
+	for (int i = 0; i < kJMMNumberOfRows * kJMMItemsPerRow; i++) {
         [self addGridItemAtIndex:i];
     }
 }
 
 -(void) addGridItemAtIndex:(int)index {
-    CGFloat xOff = kJMMItemSize * (index % 4);
-    CGFloat yOff = kJMMItemSize * trunc((index / 4));
+    CGFloat xOff = _itemSize * (index % kJMMItemsPerRow);
+    CGFloat yOff = _itemSize * trunc((index / kJMMNumberOfRows));
     NSLog(@"index: %d   xoff: %f   yOff: %f",index, xOff, yOff);
-    JMMGridItemView *item = [[JMMGridItemView alloc] initWithFrame:CGRectMake(xOff, yOff, kJMMItemSize, kJMMItemSize)];
+    JMMGridItemView *item = [[JMMGridItemView alloc] initWithFrame:CGRectMake(xOff, yOff, _itemSize, _itemSize)];
     item.tag = 1000 + index;
     item.layer.borderColor = [UIColor blackColor].CGColor;
     item.layer.borderWidth = 1;
