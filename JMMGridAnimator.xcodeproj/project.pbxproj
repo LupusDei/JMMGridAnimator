@@ -21,6 +21,8 @@
 		62E4870918B16E9000AD00D0 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62E486EB18B16E9000AD00D0 /* UIKit.framework */; };
 		62E4871118B16E9000AD00D0 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 62E4870F18B16E9000AD00D0 /* InfoPlist.strings */; };
 		62E4871318B16E9000AD00D0 /* JMMGridAnimatorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E4871218B16E9000AD00D0 /* JMMGridAnimatorTests.m */; };
+		62E4871E18B16FB500AD00D0 /* JMMGridItemView.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E4871D18B16FB500AD00D0 /* JMMGridItemView.m */; };
+		62E4872118B171A800AD00D0 /* UIView+SizeHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E4872018B171A800AD00D0 /* UIView+SizeHelper.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +55,10 @@
 		62E4870E18B16E9000AD00D0 /* JMMGridAnimatorTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "JMMGridAnimatorTests-Info.plist"; sourceTree = "<group>"; };
 		62E4871018B16E9000AD00D0 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		62E4871218B16E9000AD00D0 /* JMMGridAnimatorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = JMMGridAnimatorTests.m; sourceTree = "<group>"; };
+		62E4871C18B16FB500AD00D0 /* JMMGridItemView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JMMGridItemView.h; sourceTree = "<group>"; };
+		62E4871D18B16FB500AD00D0 /* JMMGridItemView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JMMGridItemView.m; sourceTree = "<group>"; };
+		62E4871F18B171A800AD00D0 /* UIView+SizeHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SizeHelper.h"; sourceTree = "<group>"; };
+		62E4872018B171A800AD00D0 /* UIView+SizeHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SizeHelper.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,8 +121,12 @@
 				62E486F618B16E9000AD00D0 /* JMMAppDelegate.h */,
 				62E486F718B16E9000AD00D0 /* JMMAppDelegate.m */,
 				62E486F918B16E9000AD00D0 /* Main.storyboard */,
+				62E4871F18B171A800AD00D0 /* UIView+SizeHelper.h */,
+				62E4872018B171A800AD00D0 /* UIView+SizeHelper.m */,
 				62E486FC18B16E9000AD00D0 /* JMMViewController.h */,
 				62E486FD18B16E9000AD00D0 /* JMMViewController.m */,
+				62E4871C18B16FB500AD00D0 /* JMMGridItemView.h */,
+				62E4871D18B16FB500AD00D0 /* JMMGridItemView.m */,
 				62E486FF18B16E9000AD00D0 /* Images.xcassets */,
 				62E486EE18B16E9000AD00D0 /* Supporting Files */,
 			);
@@ -250,9 +260,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				62E4871E18B16FB500AD00D0 /* JMMGridItemView.m in Sources */,
 				62E486F418B16E9000AD00D0 /* main.m in Sources */,
 				62E486F818B16E9000AD00D0 /* JMMAppDelegate.m in Sources */,
 				62E486FE18B16E9000AD00D0 /* JMMViewController.m in Sources */,
+				62E4872118B171A800AD00D0 /* UIView+SizeHelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
