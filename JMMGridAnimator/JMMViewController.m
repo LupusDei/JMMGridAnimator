@@ -15,7 +15,7 @@ static CGFloat const kJMMJuxtapositionDuration = 2.0f;
 static CGFloat const kJMMGridSize = 320.0f;
 static int const kJMMItemsPerRow = 4;
 static int const kJMMNumberOfRows = 4;
-static CGFloat const kJMMStaggerTick = 0.04;
+static CGFloat const kJMMStaggerTick = 0.02;
 
 
 static CGPoint TransformAroundCenter(CGPoint center, CGPoint start) {
@@ -28,6 +28,12 @@ static CGFloat ExpansionFromCenter(CGFloat start, CGFloat end, CGFloat length) {
 
 static CGPoint ExpandFromStart(CGPoint start, CGPoint end, CGSize size) {
 	return CGPointMake(ExpansionFromCenter(start.x, end.x, size.width), ExpansionFromCenter(start.y, end.y, size.height));
+}
+
+static CGPoint PositionForIndex(int index, float size) {
+    CGFloat xOff = size * (index % kJMMItemsPerRow);
+    CGFloat yOff = size * trunc((index / kJMMItemsPerRow));
+    return CGPointMake(xOff, yOff);
 }
 
 
@@ -60,10 +66,9 @@ static CGPoint ExpandFromStart(CGPoint start, CGPoint end, CGSize size) {
 }
 
 -(void) addGridItemAtIndex:(int)index {
-    CGFloat xOff = _itemSize * (index % kJMMItemsPerRow);
-    CGFloat yOff = _itemSize * trunc((index / kJMMNumberOfRows));
-    NSLog(@"index: %d   xoff: %f   yOff: %f",index, xOff, yOff);
-    JMMGridItemView *item = [[JMMGridItemView alloc] initWithFrame:CGRectMake(xOff, yOff, _itemSize, _itemSize)];
+    CGPoint position = PositionForIndex(index, _itemSize);
+    JMMGridItemView *item = [[JMMGridItemView alloc] initWithFrame:CGRectMake(position.x, position.y, _itemSize, _itemSize)];
+    [self setStepsForItem:item];
     item.tag = 1000 + index;
     item.layer.borderColor = [UIColor blackColor].CGColor;
     item.layer.borderWidth = 1;
@@ -75,7 +80,9 @@ static CGPoint ExpandFromStart(CGPoint start, CGPoint end, CGSize size) {
     item.backgroundColor = [UIColor colorWithRed:r/255 green:g/255 blue:b/255 alpha:1];
     [self.view addSubview:item];
     [self.gridItems addObject:item];
-    
+}
+
+-(void) setStepsForItem:(JMMGridItemView *)item {
     item.startPosition = CGPointMake(item.center.x, item.center.y);
     item.finalPosition = TransformAroundCenter(CGPointMake(self.view.center.x, self.view.center.x), item.startPosition);
     item.firstStep = ExpandFromStart(item.startPosition, item.finalPosition, CGSizeMake(self.view.width, self.view.width));
