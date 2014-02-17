@@ -11,10 +11,11 @@
 
 
 static CGFloat const kJMMExpansionFactor = 18.0f;
-static CGFloat const kJMMJuxtapositionDuration = 4.0f;
+static CGFloat const kJMMJuxtapositionDuration = 2.0f;
 static CGFloat const kJMMGridSize = 320.0f;
 static int const kJMMItemsPerRow = 4;
 static int const kJMMNumberOfRows = 4;
+static CGFloat const kJMMStaggerTick = 0.04;
 
 
 static CGPoint TransformAroundCenter(CGPoint center, CGPoint start) {
@@ -35,8 +36,10 @@ static CGPoint ExpandFromStart(CGPoint start, CGPoint end, CGSize size) {
 @end
 
 @implementation JMMViewController {
+    NSTimer *_staggerTimer;
     UIButton *_startButton;
     CGFloat _itemSize;
+    int _currentItem;
     BOOL _swapped;
 }
 
@@ -87,30 +90,47 @@ static CGPoint ExpandFromStart(CGPoint start, CGPoint end, CGSize size) {
     
 }
 
-
 -(void) _juxtapose {
-    for (JMMGridItemView *item in self.gridItems) {
- 		CAKeyframeAnimation *crossAnimation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
-        crossAnimation.duration = kJMMJuxtapositionDuration;
-        CGMutablePathRef path = CGPathCreateMutable();
-        CGPathMoveToPoint(path, NULL, item.startPosition.x, item.startPosition.y);
-        CGPathAddLineToPoint(path, NULL, item.firstStep.x, item.firstStep.y);
-        CGPathAddLineToPoint(path, NULL, item.secondStep.x, item.secondStep.y);
-        CGPathAddLineToPoint(path, NULL, item.finalPosition.x, item.finalPosition.y);
-        crossAnimation.path = path;
-        CGPathRelease(path);
-        
-        CAAnimationGroup *group = [CAAnimationGroup animation];
-        group.animations = @[crossAnimation];
-        group.duration = kJMMJuxtapositionDuration;
-        group.fillMode = kCAFillModeForwards;
-        group.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-        group.delegate = item;
-        
-        [item.layer addAnimation:group forKey:@"Juxtapose"];
-        item.center = item.finalPosition;
+	if (!_staggerTimer) {
+        _currentItem = 0;
+        _staggerTimer = [NSTimer timerWithTimeInterval:kJMMStaggerTick target:self selector:@selector(_juxtaposeNext) userInfo:nil repeats:YES];
+        [[NSRunLoop currentRunLoop] addTimer:_staggerTimer forMode:NSRunLoopCommonModes];
     }
 }
+
+-(void) _juxtaposeNext {
+    if (_currentItem < [self.gridItems count]) {
+        [self _juxtaposeItem:self.gridItems[_currentItem]];
+        _currentItem ++;
+    }
+    else {
+        [_staggerTimer invalidate];
+        _staggerTimer = nil;
+    }
+}
+
+-(void) _juxtaposeItem:(JMMGridItemView *)item {
+    CAKeyframeAnimation *crossAnimation = [CAKeyframeAnimation animationWithKeyPath:@"position"];
+    crossAnimation.duration = kJMMJuxtapositionDuration;
+    CGMutablePathRef path = CGPathCreateMutable();
+    CGPathMoveToPoint(path, NULL, item.startPosition.x, item.startPosition.y);
+    CGPathAddLineToPoint(path, NULL, item.firstStep.x, item.firstStep.y);
+    CGPathAddLineToPoint(path, NULL, item.secondStep.x, item.secondStep.y);
+    CGPathAddLineToPoint(path, NULL, item.finalPosition.x, item.finalPosition.y);
+    crossAnimation.path = path;
+    CGPathRelease(path);
+    
+    CAAnimationGroup *group = [CAAnimationGroup animation];
+    group.animations = @[crossAnimation];
+    group.duration = kJMMJuxtapositionDuration;
+    group.fillMode = kCAFillModeForwards;
+    group.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+    group.delegate = item;
+    
+    [item.layer addAnimation:group forKey:@"Juxtapose"];
+    item.center = item.finalPosition;
+}
+
 @end
 
 
