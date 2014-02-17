@@ -13,8 +13,8 @@
 static CGFloat const kJMMExpansionFactor = 18.0f;
 static CGFloat const kJMMJuxtapositionDuration = 2.0f;
 static CGFloat const kJMMGridSize = 320.0f;
-static int const kJMMItemsPerRow = 4;
-static int const kJMMNumberOfRows = 4;
+static int const kJMMItemsPerRow = 8;
+static int const kJMMNumberOfRows = 8;
 static CGFloat const kJMMStaggerTick = 0.02;
 
 
@@ -46,6 +46,7 @@ static CGPoint PositionForIndex(int index, float size) {
     UIButton *_startButton;
     CGFloat _itemSize;
     int _currentItem;
+    NSMutableArray *_availablePositions;
     BOOL _swapped;
 }
 
@@ -68,7 +69,6 @@ static CGPoint PositionForIndex(int index, float size) {
 -(void) addGridItemAtIndex:(int)index {
     CGPoint position = PositionForIndex(index, _itemSize);
     JMMGridItemView *item = [[JMMGridItemView alloc] initWithFrame:CGRectMake(position.x, position.y, _itemSize, _itemSize)];
-    [self setStepsForItem:item];
     item.tag = 1000 + index;
     item.layer.borderColor = [UIColor blackColor].CGColor;
     item.layer.borderWidth = 1;
@@ -76,17 +76,40 @@ static CGPoint PositionForIndex(int index, float size) {
     CGFloat r = (arc4random() % 255);
     CGFloat g = (arc4random() % 255);
     CGFloat b = (arc4random() % 255);
-    NSLog(@"Colors   %f  %f  %f", r,g,b);
     item.backgroundColor = [UIColor colorWithRed:r/255 green:g/255 blue:b/255 alpha:1];
     [self.view addSubview:item];
     [self.gridItems addObject:item];
 }
 
--(void) setStepsForItem:(JMMGridItemView *)item {
+-(void) setStepsForItem:(JMMGridItemView *)item forIndex:(int)index {
     item.startPosition = CGPointMake(item.center.x, item.center.y);
-    item.finalPosition = TransformAroundCenter(CGPointMake(self.view.center.x, self.view.center.x), item.startPosition);
+    CGPoint pos = PositionForIndex(index, _itemSize);
+    item.finalPosition = CGPointMake(pos.x + _itemSize/2, pos.y + _itemSize/2);
     item.firstStep = ExpandFromStart(item.startPosition, item.finalPosition, CGSizeMake(self.view.width, self.view.width));
     item.secondStep = ExpandFromStart(item.finalPosition, item.startPosition, CGSizeMake(self.view.width, self.view.width));
+}
+
+-(void) setNextStepForItem:(JMMGridItemView *)item {
+	int nextPosIndex = arc4random() % [_availablePositions count];
+    NSNumber *nextPos = _availablePositions[nextPosIndex];
+    [_availablePositions removeObjectAtIndex:nextPosIndex];
+    
+    [self setStepsForItem:item forIndex:nextPos.intValue];
+}
+
+-(void) resetNextSteps {
+    [self resetAvailablePositions];
+    for (JMMGridItemView *item in self.gridItems) {
+        [self setNextStepForItem:item];
+    }
+}
+
+-(void) resetAvailablePositions {
+    int max = kJMMItemsPerRow * kJMMNumberOfRows;
+    _availablePositions = [NSMutableArray arrayWithCapacity:kJMMItemsPerRow * kJMMNumberOfRows];
+    for (int i = 0; i < max; i++) {
+        [_availablePositions addObject:[NSNumber numberWithInt:i]];
+    }
 }
 
 -(void) triggerAnimation {
@@ -99,6 +122,7 @@ static CGPoint PositionForIndex(int index, float size) {
 
 -(void) _juxtapose {
 	if (!_staggerTimer) {
+        [self resetNextSteps];
         _currentItem = 0;
         _staggerTimer = [NSTimer timerWithTimeInterval:kJMMStaggerTick target:self selector:@selector(_juxtaposeNext) userInfo:nil repeats:YES];
         [[NSRunLoop currentRunLoop] addTimer:_staggerTimer forMode:NSRunLoopCommonModes];
